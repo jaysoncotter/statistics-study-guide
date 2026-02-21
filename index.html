@@ -1,1 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics Study Guide & Flashcards</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #345080;
+            --secondary: #e07a5f;
+            --accent: #81b29a;
+            --bg: #f0f4f8;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .nav-links button:hover,
+        .nav-links button.active {
+            background: white;
+            color: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .topic-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .topic-card h2 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.3rem;
+        }
+
+        .topic-card h3 {
+            color: var(--secondary);
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.05rem;
+        }
+
+        .topic-card ul, .topic-card ol {
+            margin-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .topic-card li {
+            margin-bottom: 0.3rem;
+        }
+
+        .formula-box {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+        }
+
+        .key-concept {
+            background: #ebf8ff;
+            border-left: 4px solid var(--primary);
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .warning-box {
+            background: #fff5f5;
+            border-left: 4px solid var(--secondary);
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        /* Flashcard Styles */
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .flashcard-controls select {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+            font-size: 0.95rem;
+            background: white;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .flashcard-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 350px;
+            perspective: 1000px;
+        }
+
+        .flashcard {
+            width: 100%;
+            max-width: 600px;
+            height: 320px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .flashcard-front .category-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .flashcard-front p {
+            font-size: 1.15rem;
+            line-height: 1.5;
+        }
+
+        .flashcard-back {
+            background: var(--card-bg);
+            color: var(--text);
+            transform: rotateY(180deg);
+            border: 3px solid var(--accent);
+            overflow-y: auto;
+        }
+
+        .flashcard-back p {
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .flashcard-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .shuffle-btn {
+            background: var(--secondary) !important;
+        }
+
+        .shuffle-btn:hover {
+            background: #c96a50 !important;
+        }
+
+        .card-counter {
+            font-size: 1rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .click-hint {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 0.75rem;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--primary-dark);
+        }
+
+        .quiz-question-number {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .quiz-option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .quiz-option:hover:not(.disabled) {
+            border-color: var(--primary);
+            background: #ebf8ff;
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: #ebf8ff;
+            font-weight: 600;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--accent);
+            background: #f0fff4;
+            font-weight: 600;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--secondary);
+            background: #fff5f5;
+        }
+
+        .quiz-option.disabled {
+            cursor: default;
+        }
+
+        .quiz-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+            margin-right: 0.5rem;
+        }
+
+        .quiz-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct-fb {
+            background: #f0fff4;
+            border: 1px solid var(--accent);
+            color: #276749;
+        }
+
+        .quiz-feedback.incorrect-fb {
+            background: #fff5f5;
+            border: 1px solid var(--secondary);
+            color: #c53030;
+        }
+
+        .progress-bar-container {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        /* Cheat Sheet */
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .cheat-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.25rem;
+            border-top: 4px solid var(--accent);
+        }
+
+        .cheat-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .cheat-card p {
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.75rem 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f7fafc;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+            .navbar h1 {
+                font-size: 1.2rem;
+            }
+            .flashcard {
+                height: 280px;
+            }
+            .flashcard-front p {
+                font-size: 1rem;
+            }
+            .cheat-grid {
+                grid-template-columns: 1fr;
+            }
+            .topic-card {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <h1>📊 Statistics Study Guide</h1>
+    <div class="nav-links" id="main-nav">
+        <button class="active" data-section="study-guide">📖 Study Guide</button>
+        <button data-section="flashcards">🃏 Flashcards</button>
+        <button data-section="quiz">✏️ Practice Quiz</button>
+        <button data-section="cheat-sheet">📋 Cheat Sheet</button>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- STUDY GUIDE -->
+    <div id="study-guide" class="section active">
+
+        <div class="topic-card">
+            <h2>📐 1. Descriptive Statistics</h2>
+            <p>Descriptive statistics summarize and organize data so it can be easily understood.</p>
+
+            <h3>Measures of Central Tendency</h3>
+            <ul>
+                <li><strong>Mean (x̄):</strong> The arithmetic average. Sum of all values divided by the number of values.</li>
+                <li><strong>Median:</strong> The middle value when data is ordered. Robust to outliers.</li>
+                <li><strong>Mode:</strong> The most frequently occurring value. Can have multiple modes.</li>
+            </ul>
+            <div class="formula-box">
+                Mean: x̄ = Σxᵢ / n<br>
+                Median: Middle value of sorted data (average of two middle values if n is even)
+            </div>
+
+            <h3>Measures of Spread (Variability)</h3>
+            <ul>
+                <li><strong>Range:</strong> Max − Min (sensitive to outliers)</li>
+                <li><strong>Variance (σ²):</strong> Average of squared deviations from the mean</li>
+                <li><strong>Standard Deviation (σ):</strong> Square root of variance — same units as data</li>
+                <li><strong>Interquartile Range (IQR):</strong> Q3 − Q1 — the middle 50% of data</li>
+            </ul>
+            <div class="formula-box">
+                Population Variance: σ² = Σ(xᵢ - μ)² / N<br>
+                Sample Variance: s² = Σ(xᵢ - x̄)² / (n - 1) ← Bessel's correction<br>
+                Standard Deviation: σ = √(σ²)
+            </div>
+
+            <div class="key-concept">
+                <strong>💡 Key Insight:</strong> We divide by (n−1) for sample variance to get an unbiased estimate of the population variance. This is called <em>Bessel's correction</em>.
+            </div>
+
+            <h3>Shape of Distributions</h3>
+            <ul>
+                <li><strong>Skewness:</strong> Measures asymmetry. Right-skewed (positive) = tail to right, mean > median. Left-skewed (negative) = tail to left, mean &lt; median.</li>
+                <li><strong>Kurtosis:</strong> Measures "tailedness." High kurtosis = heavy tails, more outliers.</li>
+            </ul>
+        </div>
+
+        <div class="topic-card">
+            <h2>🎲 2. Probability</h2>
+            <p>Probability is the mathematical framework for quantifying uncertainty.</p>
+
+            <h3>Basic Rules</h3>
+            <ul>
+                <li><strong>Addition Rule:</strong> P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</li>
+                <li><strong>Multiplication Rule:</strong> P(A ∩ B) = P(A) × P(B|A)</li>
+                <li><strong>Complement:</strong> P(A') = 1 − P(A)</li>
+                <li><strong>Independent Events:</strong> P(A ∩ B) = P(A) × P(B)</li>
+            </ul>
+
+            <h3>Conditional Probability &amp; Bayes' Theorem</h3>
+            <div class="formula-box">
+                P(A|B) = P(A ∩ B) / P(B)<br><br>
+                Bayes' Theorem: P(A|B) = [P(B|A) × P(A)] / P(B)
+            </div>
+            <div class="key-concept">
+                <strong>💡 Bayes' Theorem</strong> lets you update the probability of a hypothesis given new evidence. It "flips" conditional probabilities.
+            </div>
+
+            <h3>Common Distributions</h3>
+            <table>
+                <tr><th>Distribution</th><th>Type</th><th>Use Case</th><th>Key Parameters</th></tr>
+                <tr><td>Normal</td><td>Continuous</td><td>Natural phenomena, CLT</td><td>μ (mean), σ (std dev)</td></tr>
+                <tr><td>Binomial</td><td>Discrete</td><td>Successes in n trials</td><td>n (trials), p (prob)</td></tr>
+                <tr><td>Poisson</td><td>Discrete</td><td>Events per interval</td><td>λ (rate)</td></tr>
+                <tr><td>t-distribution</td><td>Continuous</td><td>Small samples, unknown σ</td><td>df</td></tr>
+                <tr><td>Chi-Square</td><td>Continuous</td><td>Goodness of fit</td><td>df</td></tr>
+            </table>
+
+            <h3>The Normal Distribution (68-95-99.7 Rule)</h3>
+            <ul>
+                <li>~68% of data falls within 1 standard deviation of the mean</li>
+                <li>~95% within 2 standard deviations</li>
+                <li>~99.7% within 3 standard deviations</li>
+            </ul>
+            <div class="formula-box">
+                Z-score: z = (x - μ) / σ
+            </div>
+        </div>
+
+        <div class="topic-card">
+            <h2>📊 3. Inferential Statistics</h2>
+            <p>Making conclusions about populations based on sample data.</p>
+
+            <h3>Central Limit Theorem</h3>
+            <div class="key-concept">
+                <strong>💡 CLT:</strong> Regardless of the population distribution, the sampling distribution of the sample mean approaches a normal distribution as sample size increases (typically n ≥ 30).
+            </div>
+            <div class="formula-box">
+                Standard Error: SE = σ / √n
+            </div>
+
+            <h3>Confidence Intervals</h3>
+            <div class="formula-box">
+                CI = x̄ ± z* × (σ/√n)   [known σ]<br>
+                CI = x̄ ± t* × (s/√n)   [unknown σ]<br><br>
+                Common z*: 90%→1.645, 95%→1.96, 99%→2.576
+            </div>
+            <div class="warning-box">
+                <strong>⚠️ Common Misconception:</strong> A 95% CI does NOT mean there's a 95% probability the true parameter is in this interval. It means if we repeated the process many times, 95% of intervals would contain it.
+            </div>
+
+            <h3>Hypothesis Testing Steps</h3>
+            <ol>
+                <li>State hypotheses: H₀ (null) and Hₐ (alternative)</li>
+                <li>Choose significance level (α), typically 0.05</li>
+                <li>Calculate test statistic</li>
+                <li>Find p-value or compare to critical value</li>
+                <li>Make decision: Reject or fail to reject H₀</li>
+            </ol>
+
+            <h3>Types of Errors</h3>
+            <table>
+                <tr><th></th><th>H₀ True</th><th>H₀ False</th></tr>
+                <tr><td><strong>Reject H₀</strong></td><td>Type I Error (α)</td><td>✅ Correct (Power)</td></tr>
+                <tr><td><strong>Fail to Reject</strong></td><td>✅ Correct</td><td>Type II Error (β)</td></tr>
+            </table>
+
+            <div class="warning-box">
+                <strong>⚠️ Important:</strong> We never "accept" H₀ — we only "fail to reject" it. Absence of evidence is not evidence of absence.
+            </div>
+        </div>
+
+        <div class="topic-card">
+            <h2>📈 4. Regression &amp; Correlation</h2>
+
+            <h3>Correlation</h3>
+            <ul>
+                <li><strong>Pearson's r:</strong> Measures linear relationship (−1 to +1)</li>
+                <li>r = 0 means no <em>linear</em> relationship</li>
+            </ul>
+            <div class="warning-box">
+                <strong>⚠️ Correlation ≠ Causation!</strong> A correlation does not mean X causes Y.
+            </div>
+
+            <h3>Simple Linear Regression</h3>
+            <div class="formula-box">
+                ŷ = b₀ + b₁x<br><br>
+                R² = proportion of variance in Y explained by X<br>
+                Residual: e = y − ŷ
+            </div>
+
+            <h3>Assumptions (LINE)</h3>
+            <ul>
+                <li><strong>L</strong>inearity</li>
+                <li><strong>I</strong>ndependence</li>
+                <li><strong>N</strong>ormality of residuals</li>
+                <li><strong>E</strong>qual variance (Homoscedasticity)</li>
+            </ul>
+        </div>
+
+        <div class="topic-card">
+            <h2>🔬 5. Study Design</h2>
+
+            <h3>Types of Studies</h3>
+            <ul>
+                <li><strong>Observational:</strong> No intervention. Association only.</li>
+                <li><strong>Experimental:</strong> Assigns treatments. Can establish causation.</li>
+            </ul>
+
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>Random sampling:</strong> Generalizable results</li>
+                <li><strong>Random assignment:</strong> Causal inference</li>
+                <li><strong>Confounding variable:</strong> Related to both X and Y</li>
+                <li><strong>Blinding:</strong> Prevents bias</li>
+            </ul>
+
+            <h3>Sampling Methods</h3>
+            <table>
+                <tr><th>Method</th><th>Description</th></tr>
+                <tr><td>Simple Random</td><td>Equal chance of selection</td></tr>
+                <tr><td>Stratified</td><td>Sample from subgroups</td></tr>
+                <tr><td>Cluster</td><td>Select entire groups</td></tr>
+                <tr><td>Systematic</td><td>Every kth member</td></tr>
+                <tr><td>Convenience</td><td>Whoever is available (biased!)</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- FLASHCARDS -->
+    <div id="flashcards" class="section">
+        <div class="flashcard-controls">
+            <label for="fc-category"><strong>Category:</strong></label>
+            <select id="fc-category">
+                <option value="all">All Topics</option>
+                <option value="descriptive">Descriptive Statistics</option>
+                <option value="probability">Probability</option>
+                <option value="inference">Inferential Statistics</option>
+                <option value="regression">Regression &amp; Correlation</option>
+                <option value="design">Study Design</option>
+            </select>
+            <button class="nav-btn shuffle-btn" id="shuffle-btn">🔀 Shuffle</button>
+        </div>
+
+        <div class="flashcard-container">
+            <div class="flashcard" id="flashcard">
+                <div class="flashcard-face flashcard-front">
+                    <div class="category-tag" id="fc-cat-tag">Category</div>
+                    <p id="fc-question">Loading...</p>
+                </div>
+                <div class="flashcard-face flashcard-back">
+                    <p id="fc-answer">Answer</p>
+                </div>
+            </div>
+        </div>
+        <p class="click-hint">👆 Click the card to flip it</p>
+
+        <div class="flashcard-nav">
+            <button class="nav-btn" id="prev-btn">◀ Previous</button>
+            <span class="card-counter" id="card-counter">1 / 1</span>
+            <button class="nav-btn" id="next-btn">Next ▶</button>
+        </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quiz" class="section">
+        <div class="quiz-container" id="quiz-container">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="quiz-progress" style="width: 0%"></div>
+            </div>
+            <div id="quiz-content"></div>
+        </div>
+    </div>
+
+    <!-- CHEAT SHEET -->
+    <div id="cheat-sheet" class="section">
+        <div class="cheat-grid">
+            <div class="cheat-card">
+                <h3>📐 Central Tendency</h3>
+                <p><strong>Mean:</strong> x̄ = Σxᵢ / n</p>
+                <p><strong>Median:</strong> Middle value (sorted)</p>
+                <p><strong>Mode:</strong> Most frequent value</p>
+                <p><em>Right-skewed: Mean > Median</em></p>
+                <p><em>Left-skewed: Mean &lt; Median</em></p>
+            </div>
+            <div class="cheat-card">
+                <h3>📏 Spread</h3>
+                <p><strong>Variance:</strong> s² = Σ(xᵢ−x̄)²/(n−1)</p>
+                <p><strong>Std Dev:</strong> s = √s²</p>
+                <p><strong>IQR:</strong> Q3 − Q1</p>
+                <p><strong>Range:</strong> Max − Min</p>
+                <p><strong>SE:</strong> σ/√n</p>
+            </div>
+            <div class="cheat-card">
+                <h3>🎲 Probability Rules</h3>
+                <p><strong>Addition:</strong> P(A∪B) = P(A)+P(B)−P(A∩B)</p>
+                <p><strong>Multiplication:</strong> P(A∩B) = P(A)·P(B|A)</p>
+                <p><strong>Complement:</strong> P(A') = 1−P(A)</p>
+                <p><strong>Bayes:</strong> P(A|B) = P(B|A)·P(A)/P(B)</p>
+            </div>
+            <div class="cheat-card">
+                <h3>📊 Normal Distribution</h3>
+                <p><strong>Z-score:</strong> z = (x−μ)/σ</p>
+                <p>68% within ±1σ</p>
+                <p>95% within ±2σ</p>
+                <p>99.7% within ±3σ</p>
+            </div>
+            <div class="cheat-card">
+                <h3>🧪 Hypothesis Testing</h3>
+                <p><strong>z-test:</strong> z = (x̄−μ₀)/(σ/√n)</p>
+                <p><strong>t-test:</strong> t = (x̄−μ₀)/(s/√n)</p>
+                <p><strong>p ≤ α:</strong> Reject H₀</p>
+                <p><strong>Type I (α):</strong> False positive</p>
+                <p><strong>Type II (β):</strong> False negative</p>
+                <p><strong>Power:</strong> 1 − β</p>
+            </div>
+            <div class="cheat-card">
+                <h3>📈 Regression</h3>
+                <p><strong>ŷ = b₀ + b₁x</strong></p>
+                <p><strong>R²:</strong> % variance explained</p>
+                <p><strong>r:</strong> Correlation (−1 to +1)</p>
+                <p><strong>Assumptions:</strong> LINE</p>
+            </div>
+            <div class="cheat-card">
+                <h3>📋 Confidence Intervals</h3>
+                <p><strong>CI = x̄ ± z*(σ/√n)</strong></p>
+                <p><strong>90%:</strong> z* = 1.645</p>
+                <p><strong>95%:</strong> z* = 1.96</p>
+                <p><strong>99%:</strong> z* = 2.576</p>
+                <p><em>Wider CI = more confidence, less precision</em></p>
+            </div>
+            <div class="cheat-card">
+                <h3>🔬 Study Design</h3>
+                <p><strong>Observational:</strong> Association only</p>
+                <p><strong>Experimental:</strong> Can show causation</p>
+                <p><strong>Random sampling →</strong> Generalizability</p>
+                <p><strong>Random assignment →</strong> Causation</p>
+            </div>
+            <div class="cheat-card">
+                <h3>⚠️ Common Pitfalls</h3>
+                <p>• Correlation ≠ Causation</p>
+                <p>• Never "accept" H₀</p>
+                <p>• Statistical ≠ Practical significance</p>
+                <p>• p-value ≠ P(H₀ is true)</p>
+                <p>• CI is about the method, not one interval</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===== NAVIGATION =====
+document.addEventListener('DOMContentLoaded', function() {
+
+    var navButtons = document.querySelectorAll('#main-nav button');
+    for (var i = 0; i < navButtons.length; i++) {
+        navButtons[i].addEventListener('click', function() {
+            var sectionId = this.getAttribute('data-section');
+
+            // Hide all sections
+            var sections = document.querySelectorAll('.section');
+            for (var j = 0; j < sections.length; j++) {
+                sections[j].classList.remove('active');
+            }
+
+            // Deactivate all nav buttons
+            var btns = document.querySelectorAll('#main-nav button');
+            for (var j = 0; j < btns.length; j++) {
+                btns[j].classList.remove('active');
+            }
+
+            // Activate clicked
+            document.getElementById(sectionId).classList.add('active');
+            this.classList.add('active');
+
+            if (sectionId === 'flashcards') {
+                initFlashcards();
+            }
+            if (sectionId === 'quiz' && !quizInitialized) {
+                initQuiz();
+            }
+        });
+    }
+
+    // ===== FLASHCARD DATA =====
+    var allFlashcards = [
+        { category: "descriptive", q: "What is the mean?", a: "The arithmetic average. Calculated by summing all values and dividing by the number of observations:\nx̄ = Σxᵢ / n" },
+        { category: "descriptive", q: "What is the difference between population variance and sample variance?", a: "Population variance divides by N. Sample variance divides by n−1 (Bessel's correction) to provide an unbiased estimate of the population variance." },
+        { category: "descriptive", q: "What does standard deviation measure?", a: "The average amount of variability in your dataset — how far each data point lies from the mean on average. It's in the same units as the original data (unlike variance)." },
+        { category: "descriptive", q: "What is the IQR and why is it useful?", a: "Interquartile Range = Q3 − Q1. It measures the spread of the middle 50% of data. It's robust to outliers, unlike range or standard deviation." },
+        { category: "descriptive", q: "In a right-skewed distribution, what's the relationship between mean and median?", a: "Mean > Median. The tail pulls the mean toward the right (higher values). The median is more resistant to this pull." },
+        { category: "descriptive", q: "What is a z-score?", a: "The number of standard deviations a data point is from the mean.\nz = (x − μ) / σ\nIt standardizes values to allow comparison across different scales." },
+        { category: "descriptive", q: "What is Bessel's correction and why do we use it?", a: "Dividing by (n−1) instead of n when calculating sample variance. This corrects the bias because a sample tends to underestimate the population variance." },
+
+        { category: "probability", q: "State Bayes' Theorem", a: "P(A|B) = [P(B|A) × P(A)] / P(B)\n\nIt updates the probability of a hypothesis (A) given new evidence (B) by 'flipping' the conditional probability." },
+        { category: "probability", q: "What does it mean for two events to be independent?", a: "The occurrence of one does not affect the probability of the other.\nP(A∩B) = P(A) × P(B)\nEquivalently: P(A|B) = P(A)" },
+        { category: "probability", q: "What is the Addition Rule?", a: "P(A ∪ B) = P(A) + P(B) − P(A ∩ B)\n\nFor mutually exclusive events:\nP(A ∪ B) = P(A) + P(B)" },
+        { category: "probability", q: "When would you use the Binomial distribution?", a: "Counting successes in a fixed number of independent trials, each with the same probability.\nRequirements: fixed n, two outcomes, constant p, independence." },
+        { category: "probability", q: "When would you use the Poisson distribution?", a: "Counting events in a fixed interval of time/space, when events occur independently at a constant rate λ.\nExample: emails per hour, accidents per month." },
+        { category: "probability", q: "What is the 68-95-99.7 rule?", a: "For a normal distribution:\n~68% within ±1σ\n~95% within ±2σ\n~99.7% within ±3σ" },
+        { category: "probability", q: "What are mutually exclusive events?", a: "Events that cannot occur simultaneously. If A occurs, B cannot.\nP(A ∩ B) = 0\nExample: rolling a 3 and a 5 on one die." },
+        { category: "probability", q: "What is conditional probability?", a: "The probability of event A given that B has occurred.\nP(A|B) = P(A ∩ B) / P(B)" },
+
+        { category: "inference", q: "What is the Central Limit Theorem?", a: "Regardless of the population distribution, the sampling distribution of x̄ approaches normal as n increases (typically n ≥ 30).\nMean = μ, SE = σ/√n" },
+        { category: "inference", q: "What is a p-value?", a: "The probability of observing results as extreme as (or more than) the test statistic, ASSUMING H₀ is true.\nIt is NOT the probability that H₀ is true." },
+        { category: "inference", q: "What is a Type I error?", a: "False positive: Rejecting H₀ when it is actually true.\nProbability = α (significance level).\nExample: concluding a drug works when it doesn't." },
+        { category: "inference", q: "What is a Type II error?", a: "False negative: Failing to reject H₀ when it is false.\nProbability = β\nPower = 1 − β" },
+        { category: "inference", q: "What is statistical power?", a: "Power = 1 − β\nProbability of correctly rejecting a false H₀.\nIncreased by: larger n, larger effect size, higher α, lower variability." },
+        { category: "inference", q: "What does a 95% confidence interval mean?", a: "If we repeated sampling and built a CI each time, ~95% of those intervals would contain the true parameter.\nIt does NOT mean 95% chance the parameter is in THIS interval." },
+        { category: "inference", q: "What is the standard error?", a: "The standard deviation of the sampling distribution.\nSE = σ/√n\nMeasures how much sample means vary. Decreases as n increases." },
+        { category: "inference", q: "When do you use a t-test instead of a z-test?", a: "When the population σ is unknown and estimated by s, especially with small samples. The t-distribution has heavier tails. As n increases, t approaches z." },
+        { category: "inference", q: "When do you use ANOVA?", a: "To compare means of 3+ groups simultaneously using the F-statistic. Using multiple t-tests would inflate Type I error rate." },
+        { category: "inference", q: "Why can't we say 'accept H₀'?", a: "Failing to reject H₀ doesn't prove it's true — it means we didn't find enough evidence against it. Absence of evidence is not evidence of absence." },
+        { category: "inference", q: "What are degrees of freedom?", a: "The number of independent values that can vary.\nSample variance: df = n−1\nRegression: df = n−k−1 (k = predictors)\nMore df → t approaches normal." },
+
+        { category: "regression", q: "What does R² represent?", a: "The proportion of variance in Y explained by X.\nR² = 0.75 means 75% of Y's variation is explained by the model." },
+        { category: "regression", q: "How do you interpret a regression slope (b₁)?", a: "For every 1-unit increase in X, Y changes by b₁ units on average (holding other variables constant).\nExample: b₁=2.5 → Y increases by 2.5 per unit X." },
+        { category: "regression", q: "What are the LINE assumptions?", a: "L = Linearity\nI = Independence of observations\nN = Normality of residuals\nE = Equal variance (homoscedasticity)" },
+        { category: "regression", q: "Why does correlation not imply causation?", a: "1) Confounding variables could explain both\n2) Reverse causation (Y causes X)\n3) Coincidence\n4) Only experiments with random assignment establish causation." },
+        { category: "regression", q: "What is a residual?", a: "The difference between observed and predicted:\ne = y − ŷ\nPositive = underestimate\nNegative = overestimate" },
+        { category: "regression", q: "What is Pearson's r?", a: "Measures strength and direction of LINEAR relationship between two continuous variables.\nRange: −1 to +1\nr = 0 means no linear relationship (could be nonlinear)." },
+
+        { category: "design", q: "Observational vs. Experimental studies?", a: "Observational: No intervention, association only.\nExperimental: Assigns treatments, can establish causation with proper randomization." },
+        { category: "design", q: "What is a confounding variable?", a: "A variable related to both X and Y that creates a spurious association.\nExample: Ice cream sales and drownings are both confounded by temperature." },
+        { category: "design", q: "Random sampling vs. random assignment?", a: "Random sampling: HOW you select participants → generalizability.\nRandom assignment: HOW you assign treatments → causal inference.\nThey serve different purposes." },
+        { category: "design", q: "What is double-blinding?", a: "Neither participants nor researchers know who's in treatment vs. control. Prevents placebo effect and researcher bias." },
+        { category: "design", q: "What is stratified sampling?", a: "Divide population into subgroups (strata), then randomly sample from each. Ensures all subgroups are represented.\nExample: sampling from each age group." }
+    ];
+
+    var currentCards = allFlashcards.slice();
+    var currentCardIndex = 0;
+    var flashcardsReady = false;
+
+    function initFlashcards() {
+        if (!flashcardsReady) {
+            document.getElementById('fc-category').addEventListener('change', filterFlashcards);
+            document.getElementById('shuffle-btn').addEventListener('click', shuffleCards);
+            document.getElementById('flashcard').addEventListener('click', flipCard);
+            document.getElementById('prev-btn').addEventListener('click', prevCard);
+            document.getElementById('next-btn').addEventListener('click', nextCard);
+            flashcardsReady = true;
+        }
+        filterFlashcards();
+    }
+
+    function filterFlashcards() {
+        var category = document.getElementById('fc-category').value;
+        if (category === 'all') {
+            currentCards = allFlashcards.slice();
+        } else {
+            currentCards = [];
+            for (var i = 0; i < allFlashcards.length; i++) {
+                if (allFlashcards[i].category === category) {
+                    currentCards.push(allFlashcards[i]);
+                }
+            }
+        }
+        currentCardIndex = 0;
+        displayCard();
+    }
+
+    function displayCard() {
+        if (currentCards.length === 0) return;
+        var card = currentCards[currentCardIndex];
+        document.getElementById('fc-question').textContent = card.q;
+        document.getElementById('fc-answer').textContent = card.a;
+
+        var catNames = {
+            descriptive: "Descriptive Statistics",
+            probability: "Probability",
+            inference: "Inferential Statistics",
+            regression: "Regression & Correlation",
+            design: "Study Design"
+        };
+        document.getElementById('fc-cat-tag').textContent = catNames[card.category] || card.category;
+        document.getElementById('card-counter').textContent = (currentCardIndex + 1) + ' / ' + currentCards.length;
+        document.getElementById('flashcard').classList.remove('flipped');
+        document.getElementById('prev-btn').disabled = (currentCardIndex === 0);
+        document.getElementById('next-btn').disabled = (currentCardIndex === currentCards.length - 1);
+    }
+
+    function flipCard() {
+        document.getElementById('flashcard').classList.toggle('flipped');
+    }
+
+    function nextCard() {
+        if (currentCardIndex < currentCards.length - 1) {
+            currentCardIndex++;
+            displayCard();
+        }
+    }
+
+    function prevCard() {
+        if (currentCardIndex > 0) {
+            currentCardIndex--;
+            displayCard();
+        }
+    }
+
+    function shuffleCards() {
+        for (var i = currentCards.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = currentCards[i];
+            currentCards[i] = currentCards[j];
+            currentCards[j] = temp;
+        }
+        currentCardIndex = 0;
+        displayCard();
+    }
+
+    // ===== QUIZ =====
+    var quizQuestions = [
+        {
+            q: "Which measure of central tendency is most resistant to outliers?",
+            options: ["Mean", "Median", "Mode", "Standard Deviation"],
+            correct: 1,
+            explanation: "The median is robust to outliers because it depends only on the middle value(s), not on extreme values."
+        },
+        {
+            q: "What does the Central Limit Theorem state?",
+            options: [
+                "All populations are normally distributed",
+                "The sampling distribution of the sample mean approaches normal as n increases",
+                "Larger samples always have smaller means",
+                "Sample std dev equals population std dev"
+            ],
+            correct: 1,
+            explanation: "The CLT states that regardless of the population distribution, the sampling distribution of x̄ becomes approximately normal as n increases."
+        },
+        {
+            q: "A Type I error occurs when you:",
+            options: [
+                "Fail to reject a false null hypothesis",
+                "Reject a true null hypothesis",
+                "Accept the alternative hypothesis correctly",
+                "Fail to reject a true null hypothesis"
+            ],
+            correct: 1,
+            explanation: "Type I error (false positive) = rejecting H₀ when it's actually true. Its probability is α."
+        },
+        {
+            q: "If R² = 0.64, what can you conclude?",
+            options: [
+                "The correlation coefficient is 0.64",
+                "64% of the variation in Y is explained by the model",
+                "The model is statistically significant",
+                "There is a causal relationship between X and Y"
+            ],
+            correct: 1,
+            explanation: "R² represents the proportion of variance in Y explained by X. R²=0.64 means 64% of Y's variation is accounted for."
+        },
+        {
+            q: "Which sampling method divides the population into subgroups and samples from each?",
+            options: ["Simple Random", "Cluster", "Stratified", "Convenience"],
+            correct: 2,
+            explanation: "Stratified sampling divides the population into homogeneous strata, then randomly samples from each to ensure representation."
+        },
+        {
+            q: "What is the standard error?",
+            options: [
+                "The standard deviation of the population",
+                "The standard deviation of the sampling distribution",
+                "The difference between sample and population mean",
+                "The margin of error in a confidence interval"
+            ],
+            correct: 1,
+            explanation: "SE = σ/√n. It's the standard deviation of the sampling distribution and measures precision of the sample estimate."
+        },
+        {
+            q: "The p-value is:",
+            options: [
+                "The probability that H₀ is true",
+                "The probability of making a Type II error",
+                "The probability of results as extreme as observed, assuming H₀ is true",
+                "The significance level chosen by the researcher"
+            ],
+            correct: 2,
+            explanation: "The p-value is P(data as extreme or more | H₀ true). It is NOT the probability H₀ is true."
+        },
+        {
+            q: "Which can establish a causal relationship?",
+            options: [
+                "A strong correlation (r > 0.9)",
+                "An observational study with a large sample",
+                "A randomized controlled experiment",
+                "A survey with stratified sampling"
+            ],
+            correct: 2,
+            explanation: "Only randomized controlled experiments establish causation because random assignment eliminates confounders."
+        },
+        {
+            q: "What happens to CI width as sample size increases?",
+            options: [
+                "It gets wider",
+                "It gets narrower",
+                "It stays the same",
+                "It depends on the confidence level only"
+            ],
+            correct: 1,
+            explanation: "Larger n → smaller SE → smaller margin of error → narrower CI. More data = more precise estimates."
+        },
+        {
+            q: "In LINE assumptions, what does 'E' stand for?",
+            options: [
+                "Exponential distribution",
+                "Equal sample sizes",
+                "Equal variance (homoscedasticity)",
+                "Error-free measurements"
+            ],
+            correct: 2,
+            explanation: "E = Equal variance (homoscedasticity): residual spread should be constant across predictor levels."
+        },
+        {
+            q: "When should you use a t-distribution instead of z?",
+            options: [
+                "When sample size is large",
+                "When population σ is known",
+                "When population σ is unknown",
+                "When data is categorical"
+            ],
+            correct: 2,
+            explanation: "Use t when σ is unknown and estimated by s. The t-distribution has heavier tails for extra uncertainty."
+        },
+        {
+            q: "What does ANOVA test?",
+            options: [
+                "Whether two variables are correlated",
+                "Whether a sample mean differs from a known value",
+                "Whether there's a difference among 3+ group means",
+                "Whether observed frequencies match expected"
+            ],
+            correct: 2,
+            explanation: "ANOVA tests whether at least one group mean differs, using the F-statistic. It avoids inflating Type I error from multiple t-tests."
+        },
+        {
+            q: "A researcher finds p = 0.03 with α = 0.05. Conclusion?",
+            options: [
+                "Accept H₀",
+                "The result proves Hₐ is true",
+                "Reject H₀; statistically significant",
+                "There is a 3% chance H₀ is true"
+            ],
+            correct: 2,
+            explanation: "p (0.03) ≤ α (0.05) → reject H₀. But this doesn't 'prove' anything or give P(H₀ true)."
+        },
+        {
+            q: "What is a confounding variable?",
+            options: [
+                "A variable that only affects the response",
+                "A variable related to both explanatory and response variables",
+                "A variable held constant in an experiment",
+                "A randomly assigned variable"
+            ],
+            correct: 1,
+            explanation: "A confounder is associated with both X and Y, potentially creating a spurious association between them."
+        },
+        {
+            q: "Pearson's r = 0 means:",
+            options: [
+                "No relationship exists between the variables",
+                "No linear relationship (nonlinear may exist)",
+                "The variables are independent",
+                "The data has no variance"
+            ],
+            correct: 1,
+            explanation: "r only measures LINEAR relationships. r=0 means no linear association, but a strong nonlinear pattern could exist."
+        },
+        {
+            q: "Why do we divide by (n-1) for sample variance?",
+            options: [
+                "To make calculation simpler",
+                "To get an unbiased estimate of population variance",
+                "To ensure variance is positive",
+                "To account for outliers"
+            ],
+            correct: 1,
+            explanation: "Bessel's correction (n−1) corrects the bias since sample points cluster closer to the sample mean than the population mean."
+        },
+        {
+            q: "Statistical power is:",
+            options: [
+                "Probability of Type I error",
+                "Probability of rejecting H₀ when it is true",
+                "Probability of correctly rejecting a false H₀",
+                "Probability of failing to reject H₀"
+            ],
+            correct: 2,
+            explanation: "Power = 1 − β = P(reject H₀ | H₀ false). Increased by larger n, larger effect size, higher α, less variability."
+        },
+        {
+            q: "A 95% CI means:",
+            options: [
+                "95% chance the parameter is in this specific interval",
+                "95% of the data falls in this interval",
+                "If repeated many times, 95% of intervals would contain the true parameter",
+                "The result is significant at the 5% level"
+            ],
+            correct: 2,
+            explanation: "It's about the long-run procedure: 95% of similarly constructed intervals would capture the true parameter value."
+        },
+        {
+            q: "Which is NOT an assumption of linear regression?",
+            options: [
+                "Linearity",
+                "Independence",
+                "Equal sample sizes across groups",
+                "Normality of residuals"
+            ],
+            correct: 2,
+            explanation: "The LINE assumptions are Linearity, Independence, Normality (of residuals), and Equal variance. Equal sample sizes is not one of them."
+        },
+        {
+            q: "Random assignment allows:",
+            options: [
+                "Generalization to the population",
+                "Causal inference",
+                "Elimination of all bias",
+                "Larger sample sizes"
+            ],
+            correct: 1,
+            explanation: "Random assignment distributes confounders evenly across groups, enabling causal claims. Random sampling (not assignment) enables generalization."
+        }
+    ];
+
+    var quizInitialized = false;
+    var currentQuizQuestion = 0;
+    var quizScore = 0;
+    var quizAnswered = false;
+
+    function initQuiz() {
+        quizInitialized = true;
+        currentQuizQuestion = 0;
+        quizScore = 0;
+        quizAnswered = false;
+        // Shuffle quiz
+        for (var i = quizQuestions.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = quizQuestions[i];
+            quizQuestions[i] = quizQuestions[j];
+            quizQuestions[j] = temp;
+        }
+        showQuizQuestion();
+    }
+
+    function showQuizQuestion() {
+        if (currentQuizQuestion >= quizQuestions.length) {
+            showQuizResults();
+            return;
+        }
+
+        quizAnswered = false;
+        var qData = quizQuestions[currentQuizQuestion];
+        var pct = Math.round((currentQuizQuestion / quizQuestions.length) * 100);
+        document.getElementById('quiz-progress').style.width = pct + '%';
+
+        var html = '';
+        html += '<div class="quiz-question-number">Question ' + (currentQuizQuestion + 1) + ' of ' + quizQuestions.length + '</div>';
+        html += '<div class="quiz-question">' + qData.q + '</div>';
+        html += '<div class="quiz-options" id="quiz-options">';
+        for (var i = 0; i < qData.options.length; i++) {
+            html += '<div class="quiz-option" data-index="' + i + '">' + qData.options[i] + '</div>';
+        }
+        html += '</div>';
+        html += '<button class="quiz-btn" id="check-answer-btn" disabled>Check Answer</button>';
+        html += '<div class="quiz-feedback" id="quiz-feedback"></div>';
+
+        document.getElementById('quiz-content').innerHTML = html;
+
+        // Add option click listeners
+        var options = document.querySelectorAll('#quiz-options .quiz-option');
+        for (var i = 0; i < options.length; i++) {
+            options[i].addEventListener('click', function() {
+                if (quizAnswered) return;
+                var opts = document.querySelectorAll('#quiz-options .quiz-option');
+                for (var k = 0; k < opts.length; k++) {
+                    opts[k].classList.remove('selected');
+                }
+                this.classList.add('selected');
+                document.getElementById('check-answer-btn').disabled = false;
+            });
+        }
+
+        document.getElementById('check-answer-btn').addEventListener('click', checkAnswer);
+    }
+
+    function checkAnswer() {
+        if (quizAnswered) return;
+        quizAnswered = true;
+
+        var selected = document.querySelector('#quiz-options .quiz-option.selected');
+        if (!selected) return;
+
+        var selectedIndex = parseInt(selected.getAttribute('data-index'));
+        var qData = quizQuestions[currentQuizQuestion];
+        var feedback = document.getElementById('quiz-feedback');
+
+        // Disable all options
+        var allOpts = document.querySelectorAll('#quiz-options .quiz-option');
+        for (var i = 0; i < allOpts.length; i++) {
+            allOpts[i].classList.add('disabled');
+            if (i === qData.correct) {
+                allOpts[i].classList.add('correct');
+            }
+        }
+
+        if (selectedIndex === qData.correct) {
+            quizScore++;
+            selected.classList.add('correct');
+            feedback.className = 'quiz-feedback show correct-fb';
+            feedback.innerHTML = '<strong>✅ Correct!</strong> ' + qData.explanation;
+        } else {
+            selected.classList.add('incorrect');
+            feedback.className = 'quiz-feedback show incorrect-fb';
+            feedback.innerHTML = '<strong>❌ Incorrect.</strong> ' + qData.explanation;
+        }
+
+        // Replace button with Next
+        var btn = document.getElementById('check-answer-btn');
+        btn.textContent = currentQuizQuestion < quizQuestions.length - 1 ? 'Next Question →' : 'See Results';
+        btn.disabled = false;
+
+        // Remove old listener and add new
+        var newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', function() {
+            currentQuizQuestion++;
+            showQuizQuestion();
+        });
+    }
+
+    function showQuizResults() {
+        document.getElementById('quiz-progress').style.width = '100%';
+        var pct = Math.round((quizScore / quizQuestions.length) * 100);
+        var message = '';
+        if (pct >= 90) message = '🌟 Excellent! You\'re ready!';
+        else if (pct >= 70) message = '👍 Good job! Review a few topics.';
+        else if (pct >= 50) message = '📖 Keep studying — you\'re getting there!';
+        else message = '💪 More review needed. Use the flashcards!';
+
+        var html = '';
+        html += '<div style="text-align:center; padding:2rem 0;">';
+        html += '<h2 style="color:var(--primary);">Quiz Complete!</h2>';
+        html += '<div class="score-display">' + quizScore + ' / ' + quizQuestions.length + '</div>';
+        html += '<p style="font-size:1.2rem; margin-bottom:0.5rem;">' + pct + '%</p>';
+        html += '<p style="font-size:1.1rem; margin-bottom:1.5rem;">' + message + '</p>';
+        html += '<button class="quiz-btn" id="retake-btn">🔄 Retake Quiz</button>';
+        html += '</div>';
+
+        document.getElementById('quiz-content').innerHTML = html;
+        document.getElementById('retake-btn').addEventListener('click', function() {
+            initQuiz();
+        });
+    }
+
+}); // end DOMContentLoaded
+</script>
+
+</body>
+</html>
